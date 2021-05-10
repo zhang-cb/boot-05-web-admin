@@ -1,0 +1,99 @@
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB    #单个文件最大的大小
+      max-request-size: 100MB     #一次请求所有文件的大小
+  datasource:
+    url: jdbc:mysql://localhost:3306/db_account
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+
+    druid:
+      aop-patterns: com.atguigu.admin.*    #监控com.atguigu.admin包下的所有springbean
+      filters: stat,wall      #stat（sql监控）  wall（防火墙  ）
+      stat-view-servlet:    #配置监控页
+        enabled: true
+        login-username: druid
+        login-password: druid
+        reset-enable: false
+      web-stat-filter:  #监控web
+        enabled: true
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+      filter:
+        stat:       #对上面filters里面的stat详细配置
+          slow-sql-millis: 1000   #超过1000毫秒的都为慢查询
+          log-slow-sql: true
+          enabled: true
+        wall:
+          enabled: true
+          config:
+            drop-table-allow: false
+
+
+
+  #    type: com.zaxxer.hikari.HikariDataSource
+  jdbc:
+    template:
+      query-timeout: 3   #查询超时时间为3秒
+
+
+
+  redis:
+    host: r-wz9v6ik2h1sd37k5t3pd.redis.rds.aliyuncs.com
+    port: 6379
+    password: zhangcb:Zhangcb0427
+    client-type: jedis   #spring-boot-starter-data-redis 默认使用的客户端工具为Lettuce
+    jedis:
+      pool:
+        max-active: 10
+  boot:          #配置监控需要汇报给哪台服务器
+    admin:
+      client:
+        url: http://localhost:8889
+        instance:
+          prefer-ip: true  #用ip作为应用的地址  默认是false，用hostname
+  application:
+    name: boot-05-web-admin  #应用名称默认为：spring-boot-application
+
+#    lettuce:
+#      pool:
+#        max-active: 10
+#        min-idle: 5
+#    url: redis://zhangcb:Zhangcb0427@r-wz9v6ik2h1sd37k5t3pd.redis.rds.aliyuncs.com:6379
+
+#配置mybatis规则
+mybatis:
+#  config-location: classpath:mybatis/mybatis-config.xml    如果在application.yml或者application.xml中有mybatis的配置，则mybatis的config.xml配置文件不能配置，只能2选1
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+#mybatisPlus的启动器有默认的mapper-locations:
+#  mapperLocations 自动配置好的。有默认值。classpath*:/mapper/**/*.xml；任意包的类路径下的所有mapper文件夹下任意路径下的所有xml都是sql映射文件。  建议以后sql映射文件，放在 mapper下
+
+
+# management 是所有actuator的的配置
+management:
+  endpoints:
+    enabled-by-default: true  #默认开启所有监控端点  默认是true
+    web:
+      exposure:
+        include: '*'   #以web方式暴露所有监控端点
+  endpoint:
+    health:
+      show-details: always   #总是显示详细信息。可显示每个模块的状态信息
+      enabled: true  #开启health的端点
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+
+info:   #显示应用程序信息   下面的信息可以自定义，访问http://localhost:8888/actuator/info后会显示出来
+  appName: boot-admin
+  appVersion: 1.0.0
+  env: dev
+  mavenProjcetName: @project.artifactId@   #使用@@可以获取maven的pom文件值
+
+
